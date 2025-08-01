@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Checkout</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
+    nav {
+      background: #e74c3c; color: #fff; padding: 10px 20px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    nav a { color: white; text-decoration: none; margin-left: 15px; font-weight: bold; }
+    .container { padding: 20px; max-width: 500px; margin: 0 auto; }
+    input, select {
+      width: 100%; padding: 10px; margin: 10px 0;
+      border-radius: 5px; border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .btn {
+      background: #e74c3c; color: white; border: none;
+      padding: 12px 20px; border-radius: 5px; cursor: pointer;
+      margin-top: 10px;
+      font-size: 16px;
+      width: 100%;
+    }
+    #summary {
+      margin-top: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-size: 16px;
+    }
+    #summary ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0 0 15px 0;
+      border-bottom: 1px solid #eee;
+    }
+    #summary ul li {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f1f1;
+    }
+    #summary ul li:last-child {
+      border-bottom: none;
+    }
+    #summary p {
+      font-weight: bold;
+      font-size: 18px;
+      text-align: right;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div><strong>QuickBite</strong></div>
+    <div>
+      <a href="index.html">Menu</a>
+      <a href="cart.html">Cart</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h2>Checkout</h2>
+    <input type="text" id="customer-name" placeholder="Your Name" />
+    <select id="table-number">
+      <option value="">Select Table Number</option>
+      <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+    </select>
+
+    <div id="summary"></div>
+
+    <button class="btn" onclick="placeOrder()">Place Order</button>
+  </div>
+
+  <script>
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const summary = document.getElementById("summary");
+
+    let total = 0;
+    if (cart.length === 0) {
+      summary.innerHTML = "<p>Your cart is empty.</p>";
+    } else {
+      summary.innerHTML = "<ul>" + cart.map(item =>
+        `<li><span>${item.name} x ${item.quantity}</span><span>₹${item.price * item.quantity}</span></li>`
+      ).join("") + "</ul>";
+      total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+      summary.innerHTML += `<p>Total: ₹${total}</p>`;
+    }
+
+    function placeOrder() {
+      const name = document.getElementById("customer-name").value.trim();
+      const table = document.getElementById("table-number").value;
+
+      if (!name || !table) {
+        alert("Please enter your name and select table number.");
+        return;
+      }
+
+      alert(`Thank you, ${name}! Your order for table ${table} has been placed.\nTotal: ₹${total}`);
+      localStorage.removeItem("cart");
+      window.location.href = "index.html";
+    }
+  </script>
+
+</body>
+</html>

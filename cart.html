@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Cart</title>
+  <style>
+    body { font-family: Arial; margin: 0; background: #f9f9f9; }
+    nav {
+      background: #e74c3c; color: #fff; padding: 10px 20px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    nav a { color: white; text-decoration: none; margin-left: 15px; font-weight: bold; }
+    .container { padding: 20px; }
+    .cart-item {
+      background: white; padding: 15px; margin-bottom: 10px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .qty-controls {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .btn {
+      background: #e74c3c; color: white; border: none;
+      padding: 5px 10px; border-radius: 5px; cursor: pointer;
+    }
+    #total { font-weight: bold; margin-top: 20px; }
+
+    /* New checkout button style */
+    #checkout-btn {
+      background: #27ae60;
+      padding: 12px 20px;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 25px;
+      width: 100%;
+      max-width: 300px;
+      display: block;
+      text-align: center;
+    }
+    #checkout-btn:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div><strong>QuickBite</strong></div>
+    <div>
+      <a href="index.html">Menu</a>
+      <!-- Removed Checkout link from navbar -->
+    </div>
+  </nav>
+
+  <div class="container">
+    <h2>Your Cart</h2>
+    <div id="cart-items"></div>
+    <p id="total">Total: ₹0</p>
+    <button id="checkout-btn" onclick="goToCheckout()" disabled>Go to Checkout</button>
+  </div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const cartItemsDiv = document.getElementById("cart-items");
+    const totalDiv = document.getElementById("total");
+    const checkoutBtn = document.getElementById("checkout-btn");
+
+    function saveCart() {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
+    function updateCartDisplay() {
+      cartItemsDiv.innerHTML = "";
+      let total = 0;
+
+      if (cart.length === 0) {
+        cartItemsDiv.innerHTML = "<p>Your cart is empty.</p>";
+        totalDiv.textContent = "Total: ₹0";
+        checkoutBtn.disabled = true;
+        return;
+      }
+
+      cart.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+          <span>${item.name} - ₹${item.price * item.quantity}</span>
+          <div class="qty-controls">
+            <button class="btn" onclick="decreaseQty(${index})">−</button>
+            <span>${item.quantity}</span>
+            <button class="btn" onclick="increaseQty(${index})">+</button>
+          </div>
+        `;
+        cartItemsDiv.appendChild(div);
+        total += item.price * item.quantity;
+      });
+
+      totalDiv.textContent = "Total: ₹" + total;
+      checkoutBtn.disabled = false;
+      saveCart();
+    }
+
+    function increaseQty(index) {
+      cart[index].quantity++;
+      updateCartDisplay();
+    }
+
+    function decreaseQty(index) {
+      cart[index].quantity--;
+      if (cart[index].quantity <= 0) cart.splice(index, 1);
+      updateCartDisplay();
+    }
+
+    function goToCheckout() {
+      window.location.href = "checkout.html";
+    }
+
+    updateCartDisplay();
+  </script>
+
+</body>
+</html>

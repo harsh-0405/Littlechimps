@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QuickBite Menu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f9f9f9;
+      color: #333;
+    }
+    nav {
+      background: #e74c3c;
+      color: #fff;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 15px;
+      font-weight: bold;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+    nav a:hover {
+      color: #ffd6d1;
+    }
+    nav div:first-child {
+      font-weight: bold;
+      font-size: 22px;
+      font-family: 'Brush Script MT', cursive;
+      letter-spacing: 2px;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    section {
+      margin-bottom: 40px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    section h2 {
+      border-bottom: 3px solid #e74c3c;
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+      color: #e74c3c;
+      font-family: 'Arial Black', Arial, sans-serif;
+      letter-spacing: 1.2px;
+    }
+
+    .menu {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .item {
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.2s;
+      cursor: default;
+      user-select: none;
+    }
+    .item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+    .item h3 {
+      margin: 10px 0;
+      color: #e74c3c;
+    }
+    .item p {
+      margin: 8px 0 15px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #444;
+    }
+    .btn, .qty-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.3s;
+      user-select: none;
+    }
+    .btn:hover, .qty-btn:hover {
+      background: #c0392b;
+    }
+    .qty-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    /* Section images placeholders (optional) */
+    .item img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div>QuickBite</div>
+    <div>
+      <a href="index.html">Menu</a>
+      <a href="cart.html">Cart</a>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Pizza Section -->
+    <section>
+      <h2>Pizza</h2>
+      <div class="menu" id="pizza-menu"></div>
+    </section>
+
+    <!-- Fries Section -->
+    <section>
+      <h2>Fries</h2>
+      <div class="menu" id="fries-menu"></div>
+    </section>
+
+    <!-- Beverages Section -->
+    <section>
+      <h2>Beverages</h2>
+      <div class="menu" id="beverages-menu"></div>
+    </section>
+  </main>
+
+  <script>
+    const menuItems = [
+      // Pizza
+      { name: "Margherita Pizza", price: 150, category: "pizza", img: "https://i.imgur.com/8hQh9mi.jpg" },
+      { name: "Pepperoni Pizza", price: 180, category: "pizza", img: "https://i.imgur.com/dJ7LtFm.jpg" },
+      { name: "Veggie Delight Pizza", price: 160, category: "pizza", img: "https://i.imgur.com/TnKDkkX.jpg" },
+
+      // Fries
+      { name: "French Fries", price: 60, category: "fries", img: "https://i.imgur.com/qnhj2kT.jpg" },
+      { name: "Cheese Fries", price: 80, category: "fries", img: "https://i.imgur.com/53qHv0r.jpg" },
+
+      // Beverages
+      { name: "Coke", price: 40, category: "beverages", img: "https://i.imgur.com/u9Z3MJq.jpg" },
+      { name: "Cold Coffee", price: 70, category: "beverages", img: "https://i.imgur.com/nDcl4wa.jpg" },
+      { name: "Orange Juice", price: 50, category: "beverages", img: "https://i.imgur.com/UjlXlsU.jpg" },
+    ];
+
+    const pizzaDiv = document.getElementById("pizza-menu");
+    const friesDiv = document.getElementById("fries-menu");
+    const beveragesDiv = document.getElementById("beverages-menu");
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    function saveCart() {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
+    function getQuantity(itemName) {
+      const item = cart.find(i => i.name === itemName);
+      return item ? item.quantity : 0;
+    }
+
+    function increaseQty(item) {
+      const existing = cart.find(i => i.name === item.name);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({ ...item, quantity: 1 });
+      }
+      saveCart();
+      renderMenu();
+    }
+
+    function decreaseQty(item) {
+      const existing = cart.find(i => i.name === item.name);
+      if (existing) {
+        existing.quantity -= 1;
+        if (existing.quantity <= 0) {
+          cart = cart.filter(i => i.name !== item.name);
+        }
+      }
+      saveCart();
+      renderMenu();
+    }
+
+    function createItemCard(item) {
+      const quantity = getQuantity(item.name);
+
+      const div = document.createElement("div");
+      div.className = "item";
+
+      div.innerHTML = `
+        <img src="${item.img}" alt="${item.name}" />
+        <h3>${item.name}</h3>
+        <p>₹${item.price}</p>
+        ${
+          quantity === 0
+            ? `<button class="btn" onclick='increaseQty(${JSON.stringify(item)})'>Add to Cart</button>`
+            : `
+              <div class="qty-controls">
+                <button class="qty-btn" onclick='decreaseQty(${JSON.stringify(item)})'>−</button>
+                <span>${quantity}</span>
+                <button class="qty-btn" onclick='increaseQty(${JSON.stringify(item)})'>+</button>
+              </div>
+            `
+        }
+      `;
+      return div;
+    }
+
+    function renderMenu() {
+      // Clear sections first
+      pizzaDiv.innerHTML = "";
+      friesDiv.innerHTML = "";
+      beveragesDiv.innerHTML = "";
+
+      menuItems.forEach(item => {
+        const card = createItemCard(item);
+        if (item.category === "pizza") pizzaDiv.appendChild(card);
+        else if (item.category === "fries") friesDiv.appendChild(card);
+        else if (item.category === "beverages") beveragesDiv.appendChild(card);
+      });
+    }
+
+    renderMenu();
+  </script>
+
+</body>
+</html>
